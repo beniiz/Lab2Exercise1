@@ -14,6 +14,7 @@ public class MainActivity extends ActionBarActivity {
 
     // expr = the current string to be calculated
     StringBuffer expr;
+    int memory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,27 @@ public class MainActivity extends ActionBarActivity {
         //reference: http://stackoverflow.com/questions/2206378/how-to-split-a-string-but-also-keep-the-delimiters
         String e = expr.toString();
         String[] tokens = e.split("((?<=\\+)|(?=\\+))|((?<=\\-)|(?=\\-))|((?<=\\*)|(?=\\*))|((?<=/)|(?=/))");
+        TextView tvAns = (TextView)findViewById(R.id.tvAns);
+
+        int total =Integer.parseInt(tokens[0]);
+        int num;
+
+        for(int i=1 ; i<tokens.length-1 ; i++){
+
+
+                if ((tokens[i].equals("+"))) {
+                    total += Integer.parseInt(tokens[i+1]);
+                }else if ((tokens[i].equals("-"))) {
+                total -= Integer.parseInt(tokens[i+1]);
+                }else if ((tokens[i].equals("*"))) {
+                    total *= Integer.parseInt(tokens[i+1]);
+                }else if ((tokens[i].equals("/"))) {
+                    total /= Integer.parseInt(tokens[i+1]);
+                }
+
+        }
+
+        tvAns.setText(total+"");
     }
 
     public void digitClicked(View v) {
@@ -48,11 +70,79 @@ public class MainActivity extends ActionBarActivity {
         //calculate the result if possible and update tvAns
         recalculate();
     }
+    public void equalClicked(View v) {
+
+        TextView tvAns = (TextView)findViewById(R.id.tvAns);
+
+        expr = new StringBuffer();
+        expr.append(tvAns.getText().toString());
+
+        updateExprDisplay();
+
+        tvAns.setText("0");
+
+    }
 
     public void operatorClicked(View v) {
         //IF the last character in expr is not an operator and expr is not "",
         //THEN append the clicked operator and updateExprDisplay,
         //ELSE do nothing
+        String e = expr.toString();
+        String[] tokens = e.split("((?<=\\+)|(?=\\+))|((?<=\\-)|(?=\\-))|((?<=\\*)|(?=\\*))|((?<=/)|(?=/))");
+
+
+        if(!tokens[tokens.length-1].equals("") && !((tokens[tokens.length-1].equals("+")) || (tokens[tokens.length-1].equals("-")) || (tokens[tokens.length-1].equals("*")) || (tokens[tokens.length-1].equals("/"))))
+        {
+            String op = ((TextView)v).getText().toString();
+            expr.append(op);
+            updateExprDisplay();
+
+        }
+        else{}
+
+
+
+
+    }
+
+
+
+
+    public void MClicked (View v){
+        int id = v.getId();
+        TextView tvAns = (TextView)findViewById(R.id.tvAns);
+        Toast t;
+        switch (id){
+            case R.id.madd:
+                memory += Integer.parseInt(tvAns.getText().toString());
+                t = Toast.makeText(this.getApplicationContext(),"Memory : "+ memory
+                        ,Toast.LENGTH_SHORT);
+                t.show();
+                break;
+            case R.id.msub:
+                memory -= Integer.parseInt(tvAns.getText().toString());
+                t = Toast.makeText(this.getApplicationContext(),"Memory : "+ memory
+                        ,Toast.LENGTH_SHORT);
+                t.show();
+                break;
+            case R.id.mr:
+                TextView tvExpr = (TextView)findViewById(R.id.tvExpr);
+                tvExpr.setText(memory+"");
+                tvAns.setText(memory+"");
+                t = Toast.makeText(this.getApplicationContext(),"Memory : "+ memory
+                        ,Toast.LENGTH_SHORT);
+                t.show();
+                break;
+            case R.id.mc:
+                memory = 0;
+                // expr = new StringBuffer(memory);
+                tvAns.setText("0");
+                t = Toast.makeText(this.getApplicationContext(),"Memory is cleared to " + memory
+                        ,Toast.LENGTH_SHORT);
+                t.show();
+                break;
+
+        }
     }
 
     public void ACClicked(View v) {
@@ -63,6 +153,8 @@ public class MainActivity extends ActionBarActivity {
         Toast t = Toast.makeText(this.getApplicationContext(),
                 "All cleared", Toast.LENGTH_SHORT);
         t.show();
+        TextView tvAns = (TextView)findViewById(R.id.tvAns);
+        tvAns.setText("0");
     }
 
     public void BSClicked(View v) {
